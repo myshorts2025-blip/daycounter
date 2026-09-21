@@ -1,0 +1,650 @@
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+      - name: Use fixed signing key
+        run: |
+          mkdir -p ~/.android
+          echo "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" | base64 -d > ~/.android/debug.keystore
+      - name: Create project files
+        run: |
+          mkdir -p app
+          cat > app/build.gradle.kts <<'EOF_0'
+          plugins {
+              id("com.android.application")
+              id("org.jetbrains.kotlin.android")
+          }
+
+          android {
+              namespace = "com.example.daycounter"
+              compileSdk = 34
+
+              defaultConfig {
+                  applicationId = "com.example.daycounter"
+                  minSdk = 26
+                  targetSdk = 34
+                  versionCode = 4
+                  versionName = "1.3"
+              }
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+              kotlinOptions { jvmTarget = "17" }
+          }
+          EOF_0
+          mkdir -p app/src/main
+          cat > app/src/main/AndroidManifest.xml <<'EOF_1'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <uses-feature android:name="android.software.live_wallpaper" android:required="true" />
+
+              <application
+                  android:label="@string/app_name"
+                  android:allowBackup="true"
+                  android:theme="@android:style/Theme.Material.Light.DarkActionBar">
+
+                  <activity android:name=".MainActivity" android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+
+                  <service
+                      android:name=".DayCounterService"
+                      android:exported="true"
+                      android:label="@string/app_name"
+                      android:permission="android.permission.BIND_WALLPAPER">
+                      <intent-filter>
+                          <action android:name="android.service.wallpaper.WallpaperService" />
+                      </intent-filter>
+                      <meta-data
+                          android:name="android.service.wallpaper"
+                          android:resource="@xml/daycounter_wallpaper" />
+                  </service>
+              </application>
+          </manifest>
+          EOF_1
+          mkdir -p app/src/main/java/com/example/daycounter
+          cat > app/src/main/java/com/example/daycounter/DayCounterService.kt <<'EOF_2'
+          package com.example.daycounter
+
+          import android.content.SharedPreferences
+          import android.graphics.Bitmap
+          import android.graphics.BlurMaskFilter
+          import android.graphics.Canvas
+          import android.graphics.Color
+          import android.graphics.Paint
+          import android.graphics.Rect
+          import android.graphics.Typeface
+          import android.os.Handler
+          import android.os.Looper
+          import android.os.PowerManager
+          import android.os.SystemClock
+          import android.service.wallpaper.WallpaperService
+          import android.view.SurfaceHolder
+          import java.time.Duration
+          import java.time.LocalDateTime
+          import kotlin.math.PI
+          import kotlin.math.sin
+
+          class DayCounterService : WallpaperService() {
+
+              override fun onCreateEngine(): Engine = CounterEngine()
+
+              inner class CounterEngine : Engine() {
+                  // ---- Customize here ----
+                  private val bgColor = Color.BLACK
+                  private val numberColor = Color.WHITE
+                  private val labelColor = Color.parseColor("#88FFFFFF")
+                  private val effectsMs = 10_000L    // effects last 10 seconds after the screen turns on
+                  private val tiltDegrees = 12f      // how far it tilts left/right
+                  private val wiggleMs = 1500L       // how long each wiggle lasts
+                  private val swingMs = 750.0        // time of one left-right swing inside a wiggle
+                  private val cycleMs = 8000L        // a wiggle starts every 8 seconds (inside the 10 s)
+                  private val frameDelayMs = 33L     // ~30 frames per second, only during the effects
+                  // ------------------------
+
+                  private val handler = Handler(Looper.getMainLooper())
+                  private val redraw = Runnable { draw() }
+                  private var visible = false
+                  private var showStart = 0L
+
+                  // cached glow picture (built once per number / screen size, then reused every frame)
+                  private var glowBmp: Bitmap? = null
+                  private var glowKey = ""
+                  private var glowOffX = 0f
+                  private var glowOffY = 0f
+                  private var glowTextW = 0f
+
+                  private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+                      handler.post { if (visible) draw() }
+                  }
+
+                  private val numberPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                      color = numberColor
+                      textAlign = Paint.Align.CENTER
+                      typeface = Typeface.create("sans-serif-light", Typeface.NORMAL)
+                  }
+                  private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                      color = labelColor
+                      textAlign = Paint.Align.CENTER
+                      typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                      letterSpacing = 0.3f
+                  }
+                  private val edgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                      style = Paint.Style.STROKE
+                      textAlign = Paint.Align.CENTER
+                      typeface = numberPaint.typeface
+                  }
+                  private val bitmapPaint = Paint(Paint.FILTER_BITMAP_FLAG)
+
+                  override fun onCreate(surfaceHolder: SurfaceHolder) {
+                      super.onCreate(surfaceHolder)
+                      DayStore.prefs(applicationContext).registerOnSharedPreferenceChangeListener(prefListener)
+                  }
+
+                  override fun onDestroy() {
+                      DayStore.prefs(applicationContext).unregisterOnSharedPreferenceChangeListener(prefListener)
+                      handler.removeCallbacks(redraw)
+                      glowBmp?.recycle()
+                      glowBmp = null
+                      super.onDestroy()
+                  }
+
+                  override fun onVisibilityChanged(visible: Boolean) {
+                      this.visible = visible
+                      if (visible) {
+                          showStart = SystemClock.uptimeMillis() // 10-second show starts when the screen is on
+                          draw()
+                      } else {
+                          handler.removeCallbacks(redraw)
+                      }
+                  }
+
+                  override fun onSurfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+                      super.onSurfaceChanged(holder, format, width, height)
+                      draw()
+                  }
+
+                  override fun onSurfaceDestroyed(holder: SurfaceHolder) {
+                      visible = false
+                      handler.removeCallbacks(redraw)
+                      super.onSurfaceDestroyed(holder)
+                  }
+
+                  private fun batterySaverOn(): Boolean {
+                      val pm = applicationContext.getSystemService(POWER_SERVICE) as PowerManager
+                      return pm.isPowerSaveMode
+                  }
+
+                  /** 0..1 glow strength: fades in, gently pulses, fades out before the 10 seconds end. */
+                  private fun glowIntensity(elapsed: Long): Float {
+                      val t = elapsed.toFloat()
+                      val fadeIn = 600f
+                      val fadeOut = 1500f
+                      val envelope = when {
+                          t < fadeIn -> t / fadeIn
+                          t > effectsMs - fadeOut -> ((effectsMs - t) / fadeOut).coerceIn(0f, 1f)
+                          else -> 1f
+                      }
+                      val pulse = 0.8f + 0.2f * sin(2 * PI * t / 1400.0).toFloat()
+                      return envelope * pulse
+                  }
+
+                  /** Builds the blurred glow picture once, so each animation frame only has to draw it. */
+                  private fun ensureGlow(day: String, w: Float, textSize: Float, glowArgb: Int) {
+                      val key = "$day@${w.toInt()}#$glowArgb"
+                      if (key == glowKey && glowBmp != null) return
+
+                      val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                          this.textSize = textSize
+                          typeface = numberPaint.typeface
+                          textAlign = Paint.Align.LEFT
+                          color = glowArgb
+                      }
+                      val b = Rect()
+                      p.getTextBounds(day, 0, day.length, b)
+                      val pad = (w * 0.15f).toInt()
+                      val bmp = Bitmap.createBitmap(b.width() + pad * 2, b.height() + pad * 2, Bitmap.Config.ARGB_8888)
+                      val c = Canvas(bmp)
+                      val ox = (pad - b.left).toFloat()
+                      val oy = (pad - b.top).toFloat()
+
+                      p.maskFilter = BlurMaskFilter(w * 0.07f, BlurMaskFilter.Blur.NORMAL)  // wide soft halo
+                      c.drawText(day, ox, oy, p)
+                      p.maskFilter = BlurMaskFilter(w * 0.02f, BlurMaskFilter.Blur.NORMAL)  // tight bright halo
+                      c.drawText(day, ox, oy, p)
+
+                      glowBmp?.recycle()
+                      glowBmp = bmp
+                      glowKey = key
+                      glowOffX = (b.left - pad).toFloat()
+                      glowOffY = (b.top - pad).toFloat()
+                      glowTextW = p.measureText(day)
+                  }
+
+                  private fun draw() {
+                      handler.removeCallbacks(redraw)
+                      val holder = surfaceHolder
+                      val canvas: Canvas = try { holder.lockCanvas() } catch (e: Exception) { null } ?: return
+
+                      val ctx = applicationContext
+                      val saver = batterySaverOn()
+                      val wiggleOn = DayStore.isAnimated(ctx) && !saver
+                      val glowOn = DayStore.isGlow(ctx) && !saver
+                      val elapsed = SystemClock.uptimeMillis() - showStart
+                      val active = elapsed < effectsMs
+                      val phase = elapsed % cycleMs
+                      val wiggling = wiggleOn && active && phase < wiggleMs
+                      val glow = if (glowOn && active) glowIntensity(elapsed) else 0f
+
+                      try {
+                          val w = canvas.width.toFloat()
+                          val h = canvas.height.toFloat()
+                          canvas.drawColor(bgColor)
+
+                          numberPaint.textSize = w * 0.6f
+                          labelPaint.textSize = w * 0.05f
+
+                          val day = DayStore.currentDay(ctx).toString()
+                          val metrics = numberPaint.fontMetrics
+                          val y = h / 2f - (metrics.ascent + metrics.descent) / 2f
+
+                          val glowArgb = DayStore.glowColor(ctx)   // color picked in the app
+                          if (glowOn) ensureGlow(day, w, numberPaint.textSize, glowArgb)
+
+                          val angle = if (wiggling) {
+                              val t = phase.toDouble()
+                              val fade = 1.0 - t / wiggleMs
+                              (tiltDegrees * sin(2 * PI * t / swingMs) * fade).toFloat()
+                          } else 0f
+
+                          canvas.save()
+                          canvas.rotate(angle, w / 2f, h / 2f)
+
+                          val bmp = glowBmp
+                          if (glow > 0f && bmp != null) {
+                              val a = (255 * glow).toInt().coerceIn(0, 255)
+                              bitmapPaint.alpha = a
+                              canvas.drawBitmap(bmp, w / 2f - glowTextW / 2f + glowOffX, y + glowOffY, bitmapPaint)
+
+                              edgePaint.textSize = numberPaint.textSize
+                              edgePaint.strokeWidth = w * 0.008f
+                              edgePaint.color = glowArgb
+                              edgePaint.alpha = a
+                              canvas.drawText(day, w / 2f, y, edgePaint)   // thin bright edge line
+                          }
+
+                          canvas.drawText(day, w / 2f, y, numberPaint)
+                          canvas.drawText("DAY", w / 2f, y + metrics.ascent - w * 0.03f, labelPaint)
+                          canvas.restore()
+                      } finally {
+                          holder.unlockCanvasAndPost(canvas)
+                      }
+
+                      if (visible) {
+                          val animating = active && (wiggleOn || glowOn)
+                          val delay = if (animating) frameDelayMs else millisUntilMidnight() + 1000
+                          handler.postDelayed(redraw, delay)
+                      }
+                  }
+
+                  private fun millisUntilMidnight(): Long {
+                      val now = LocalDateTime.now()
+                      val next = now.toLocalDate().plusDays(1).atStartOfDay()
+                      return Duration.between(now, next).toMillis()
+                  }
+              }
+          }
+          EOF_2
+          mkdir -p app/src/main/java/com/example/daycounter
+          cat > app/src/main/java/com/example/daycounter/DayStore.kt <<'EOF_3'
+          package com.example.daycounter
+
+          import android.content.Context
+          import android.content.SharedPreferences
+          import android.graphics.Color
+          import java.time.LocalDate
+
+          object DayStore {
+              private const val PREFS = "daycounter"
+              private const val KEY_START = "startEpochDay"
+              private const val KEY_ANIM = "tiltAnimation"
+              private const val KEY_GLOW = "glowEffect"
+              private const val KEY_GLOW_COLOR = "glowColor"
+              val DEFAULT_GLOW: Int = Color.parseColor("#00E5FF")
+              const val CYCLE = 10
+
+              fun prefs(ctx: Context): SharedPreferences =
+                  ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+              /** Returns today's number, 1..10 (11th day wraps back to 1). */
+              fun currentDay(ctx: Context): Int {
+                  val p = prefs(ctx)
+                  val today = LocalDate.now().toEpochDay()
+                  if (!p.contains(KEY_START)) p.edit().putLong(KEY_START, today).apply()
+                  val start = p.getLong(KEY_START, today)
+                  return Math.floorMod(today - start, CYCLE.toLong()).toInt() + 1
+              }
+
+              /** Make today equal to [day] (1..10); counting continues from there. */
+              fun setToday(ctx: Context, day: Int) {
+                  val start = LocalDate.now().toEpochDay() - (day - 1)
+                  prefs(ctx).edit().putLong(KEY_START, start).apply()
+              }
+
+              fun isAnimated(ctx: Context): Boolean = prefs(ctx).getBoolean(KEY_ANIM, true)
+
+              fun setAnimated(ctx: Context, on: Boolean) {
+                  prefs(ctx).edit().putBoolean(KEY_ANIM, on).apply()
+              }
+
+              fun isGlow(ctx: Context): Boolean = prefs(ctx).getBoolean(KEY_GLOW, true)
+
+              fun setGlow(ctx: Context, on: Boolean) {
+                  prefs(ctx).edit().putBoolean(KEY_GLOW, on).apply()
+              }
+
+              fun glowColor(ctx: Context): Int = prefs(ctx).getInt(KEY_GLOW_COLOR, DEFAULT_GLOW)
+
+              fun setGlowColor(ctx: Context, color: Int) {
+                  prefs(ctx).edit().putInt(KEY_GLOW_COLOR, color).apply()
+              }
+          }
+          EOF_3
+          mkdir -p app/src/main/java/com/example/daycounter
+          cat > app/src/main/java/com/example/daycounter/HueBar.kt <<'EOF_4'
+          package com.example.daycounter
+
+          import android.content.Context
+          import android.graphics.Canvas
+          import android.graphics.Color
+          import android.graphics.LinearGradient
+          import android.graphics.Paint
+          import android.graphics.RectF
+          import android.graphics.Shader
+          import android.view.MotionEvent
+          import android.view.View
+
+          /** A rainbow slider: touch or drag to pick any color. */
+          class HueBar(context: Context, private val onPick: (Int) -> Unit) : View(context) {
+
+              private val density = resources.displayMetrics.density
+              private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+              private val thumbFill = Paint(Paint.ANTI_ALIAS_FLAG)
+              private val thumbRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                  style = Paint.Style.STROKE
+                  color = Color.WHITE
+                  strokeWidth = 3 * density
+              }
+              private val rect = RectF()
+              private val pad = 20 * density
+              private var hue = 180f
+              private var current = Color.CYAN
+
+              fun setColor(color: Int) {
+                  val hsv = FloatArray(3)
+                  Color.colorToHSV(color, hsv)
+                  hue = hsv[0]
+                  current = color
+                  invalidate()
+              }
+
+              override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+                  super.onSizeChanged(w, h, oldw, oldh)
+                  val colors = IntArray(7) { Color.HSVToColor(floatArrayOf(it * 60f, 1f, 1f)) }
+                  barPaint.shader = LinearGradient(pad, 0f, w - pad, 0f, colors, null, Shader.TileMode.CLAMP)
+              }
+
+              override fun onDraw(canvas: Canvas) {
+                  val w = width.toFloat()
+                  val h = height.toFloat()
+                  rect.set(pad, h * 0.35f, w - pad, h * 0.65f)
+                  canvas.drawRoundRect(rect, h * 0.15f, h * 0.15f, barPaint)
+
+                  val x = pad + (hue / 360f) * (w - 2 * pad)
+                  thumbFill.color = current
+                  canvas.drawCircle(x, h / 2f, h * 0.36f, thumbFill)
+                  canvas.drawCircle(x, h / 2f, h * 0.36f, thumbRing)
+              }
+
+              override fun onTouchEvent(e: MotionEvent): Boolean {
+                  when (e.actionMasked) {
+                      MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                          parent?.requestDisallowInterceptTouchEvent(true)
+                          val f = ((e.x - pad) / (width - 2 * pad)).coerceIn(0f, 1f)
+                          hue = f * 360f
+                          current = Color.HSVToColor(floatArrayOf(hue, 1f, 1f))
+                          invalidate()
+                          onPick(current)
+                          return true
+                      }
+                      MotionEvent.ACTION_UP -> {
+                          performClick()
+                          return true
+                      }
+                  }
+                  return super.onTouchEvent(e)
+              }
+
+              override fun performClick(): Boolean {
+                  super.performClick()
+                  return true
+              }
+          }
+          EOF_4
+          mkdir -p app/src/main/java/com/example/daycounter
+          cat > app/src/main/java/com/example/daycounter/MainActivity.kt <<'EOF_5'
+          package com.example.daycounter
+
+          import android.app.Activity
+          import android.app.WallpaperManager
+          import android.content.ComponentName
+          import android.content.Intent
+          import android.graphics.Color
+          import android.graphics.drawable.GradientDrawable
+          import android.os.Bundle
+          import android.view.Gravity
+          import android.view.View
+          import android.view.ViewGroup
+          import android.widget.Button
+          import android.widget.LinearLayout
+          import android.widget.NumberPicker
+          import android.widget.ScrollView
+          import android.widget.Switch
+          import android.widget.TextView
+
+          class MainActivity : Activity() {
+
+              private val presets = listOf(
+                  "#00E5FF", "#2979FF", "#B44CFF", "#FF4081", "#FF1744",
+                  "#FF9100", "#FFD600", "#00E676", "#FFFFFF"
+              )
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+
+                  val dp = resources.displayMetrics.density
+                  val pad = (24 * dp).toInt()
+                  val gap = (12 * dp).toInt()
+
+                  val root = LinearLayout(this).apply {
+                      orientation = LinearLayout.VERTICAL
+                      gravity = Gravity.CENTER_HORIZONTAL
+                      setPadding(pad, pad, pad, pad)
+                  }
+
+                  val label = TextView(this).apply {
+                      text = "Today is day:"
+                      textSize = 20f
+                      gravity = Gravity.CENTER
+                  }
+
+                  val picker = NumberPicker(this).apply {
+                      minValue = 1
+                      maxValue = DayStore.CYCLE
+                      value = DayStore.currentDay(this@MainActivity)
+                  }
+
+                  val tiltSwitch = Switch(this).apply {
+                      text = "Tilt animation  "
+                      textSize = 18f
+                      isChecked = DayStore.isAnimated(this@MainActivity)
+                      setPadding(0, gap, 0, gap)
+                      setOnCheckedChangeListener { _, on -> DayStore.setAnimated(this@MainActivity, on) }
+                  }
+
+                  val glowSwitch = Switch(this).apply {
+                      text = "Glow effect  "
+                      textSize = 18f
+                      isChecked = DayStore.isGlow(this@MainActivity)
+                      setPadding(0, gap, 0, gap)
+                      setOnCheckedChangeListener { _, on -> DayStore.setGlow(this@MainActivity, on) }
+                  }
+
+                  // ---- Glow color picker ----
+                  val colorLabel = TextView(this).apply {
+                      text = "Glow color"
+                      textSize = 18f
+                      gravity = Gravity.CENTER
+                      setPadding(0, gap, 0, gap)
+                  }
+
+                  val preview = TextView(this).apply {
+                      text = "10"
+                      textSize = 56f
+                      setTextColor(Color.WHITE)
+                      gravity = Gravity.CENTER
+                      setBackgroundColor(Color.BLACK)
+                      setPadding(0, gap * 2, 0, gap * 2)
+                  }
+
+                  fun showColor(color: Int) {
+                      preview.setShadowLayer(40f, 0f, 0f, color)
+                      preview.invalidate()
+                  }
+
+                  val hueBar = HueBar(this) { color ->
+                      DayStore.setGlowColor(this, color)
+                      showColor(color)
+                  }
+
+                  val swatches = LinearLayout(this).apply {
+                      orientation = LinearLayout.HORIZONTAL
+                      gravity = Gravity.CENTER
+                      setPadding(0, gap, 0, gap)
+                  }
+                  val dot = (28 * dp).toInt()
+                  val margin = (2 * dp).toInt()
+                  for (hex in presets) {
+                      val c = Color.parseColor(hex)
+                      val swatch = View(this)
+                      swatch.background = GradientDrawable().apply {
+                          shape = GradientDrawable.OVAL
+                          setColor(c)
+                          setStroke((2 * dp).toInt(), Color.GRAY)
+                      }
+                      swatch.layoutParams = LinearLayout.LayoutParams(dot, dot).apply {
+                          setMargins(margin, 0, margin, 0)
+                      }
+                      swatch.setOnClickListener {
+                          DayStore.setGlowColor(this, c)
+                          hueBar.setColor(c)
+                          showColor(c)
+                      }
+                      swatches.addView(swatch)
+                  }
+
+                  val startColor = DayStore.glowColor(this)
+                  hueBar.setColor(startColor)
+                  showColor(startColor)
+
+                  val hint = TextView(this).apply {
+                      text = "Effects play for 10 seconds each time you turn on the screen, then stop to save battery."
+                      textSize = 13f
+                      gravity = Gravity.CENTER
+                      setPadding(0, gap, 0, gap)
+                  }
+
+                  val button = Button(this).apply {
+                      text = "Set as live wallpaper"
+                      setOnClickListener {
+                          DayStore.setToday(this@MainActivity, picker.value)
+                          val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER).putExtra(
+                              WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                              ComponentName(this@MainActivity, DayCounterService::class.java)
+                          )
+                          startActivity(intent)
+                      }
+                  }
+
+                  root.addView(label)
+                  root.addView(picker)
+                  root.addView(tiltSwitch)
+                  root.addView(glowSwitch)
+                  root.addView(colorLabel)
+                  root.addView(preview, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+                  root.addView(hueBar, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (56 * dp).toInt()))
+                  root.addView(swatches)
+                  root.addView(hint)
+                  root.addView(button)
+
+                  val scroll = ScrollView(this)
+                  scroll.addView(root, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+                  setContentView(scroll)
+              }
+          }
+          EOF_5
+          mkdir -p app/src/main/res/values
+          cat > app/src/main/res/values/strings.xml <<'EOF_6'
+          <resources>
+              <string name="app_name">Day Counter</string>
+          </resources>
+          EOF_6
+          mkdir -p app/src/main/res/xml
+          cat > app/src/main/res/xml/daycounter_wallpaper.xml <<'EOF_7'
+          <?xml version="1.0" encoding="utf-8"?>
+          <wallpaper xmlns:android="http://schemas.android.com/apk/res/android" />
+          EOF_7
+          cat > build.gradle.kts <<'EOF_8'
+          plugins {
+              id("com.android.application") version "8.5.2" apply false
+              id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+          }
+          EOF_8
+          cat > gradle.properties <<'EOF_9'
+          org.gradle.jvmargs=-Xmx2048m
+          android.useAndroidX=true
+          kotlin.code.style=official
+          EOF_9
+          cat > settings.gradle.kts <<'EOF_10'
+          pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+              repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "DayCounterWallpaper"
+          include(":app")
+          EOF_10
+      - name: Build debug APK
+        run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DayCounter-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
